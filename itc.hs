@@ -4,10 +4,10 @@
  - Paulo Sérgio Almeida, Carlos Baquero, Victor Fonte
  -}
 module ITC
-( Stamp
-, seed -- base stamp
-, fork, peek
-, event
+( seed -- base stamp
+, fork, peek -- split a stamp
+, join -- combine two stamps
+, event -- increment a stamp
 ) where
 
 import Data.Monoid
@@ -17,6 +17,10 @@ import Data.Monoid
 data ITree = O | I | INode ITree ITree deriving (Eq,Show)
 data Event = Leaf Int | ENode Int Event Event deriving (Eq,Show)
 data Stamp = Stamp ITree Event deriving (Eq,Show)
+
+instance Monoid Stamp where
+  mempty = seed
+  mappend = join
 
 instance Ord Event where
   (Leaf n1) <= (Leaf n2) = n1 <= n2
@@ -99,7 +103,7 @@ ejoin (ENode n1 l1 r1) (ENode n2 l2 r2)
   | otherwise = enorm $ ENode n1 (ejoin l1 . lift m $ l2) (ejoin r1 . lift m $ r2)
   | otherwise = enorm $ ENode n1 (ejoin l1 . lift m $ l2) (ejoin r1 . lift m $ r2)
   where m = n2 - n1
-
+         
 join :: Stamp -> Stamp -> Stamp
 join (Stamp i1 e1) (Stamp i2 e2) = Stamp (isum i1 i2) (ejoin e1 e2)
 

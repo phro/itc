@@ -100,10 +100,10 @@ ejoin (ENode n1 l1 r1) (Leaf n2) =
   ejoin (ENode n1 l1 r1) (ENode n2 (Leaf 0) (Leaf 0))
 ejoin (ENode n1 l1 r1) (ENode n2 l2 r2)
   | n1 > n2   = ejoin (ENode n2 l2 r2) (ENode n1 l1 r1)
-  | otherwise = enorm $ ENode n1 (ejoin l1 . lift m $ l2) (ejoin r1 . lift m $ r2)
-  | otherwise = enorm $ ENode n1 (ejoin l1 . lift m $ l2) (ejoin r1 . lift m $ r2)
+  | otherwise =
+    enorm $ ENode n1 (ejoin l1 . lift m $ l2) (ejoin r1 . lift m $ r2)
   where m = n2 - n1
-         
+
 join :: Stamp -> Stamp -> Stamp
 join (Stamp i1 e1) (Stamp i2 e2) = Stamp (isum i1 i2) (ejoin e1 e2)
 
@@ -148,3 +148,23 @@ event (Stamp i e)
   | otherwise = Stamp i e''
   where e'  = fill $ Stamp i e
         (e'',_) = grow $ Stamp i e
+
+-- Visualising Stamps
+
+-- Ascii Art; this seems difficult.
+--draw :: Stamp -> String
+
+{-idraw :: ITree -> String
+idraw i = case i of
+            O -> preamble ++ iSubDraw (0,1) O
+            I -> preamble ++ iSubDraw (0,1) I
+            (INode i1 i2) ->
+              preamble ++ (iSubDraw (0,1/2) i1) ++ (iSubDraw (1/2,1) i2)
+  where preamble = "path[] id; real idHeight = 1/10"
+        iSubDraw _ O = ""
+        iSubDraw (l,r) I =
+          "id = id^^box((" ++ (show l) ++ ",0),
+          " ++ (show r) ++ ",idHeight));\n"
+        iSubDraw (l,r) (INode i1 i2) = -- ...-}
+--"draw(box((0,0),(1,idHeight)));"
+--edraw :: Event -> String
